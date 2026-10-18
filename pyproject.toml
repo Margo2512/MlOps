@@ -1,0 +1,38 @@
+[project]
+name = "mlops"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.34.2",
+    "ruff>=0.17.1",
+    "ty>=0.0.89",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "S",   # flake8-bandit
+]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["grades"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ty.rules]
+unresolved-attribute = "error"
+possibly-unresolved-reference = "warn"
+division-by-zero = "warn"
