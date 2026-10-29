@@ -24,3 +24,36 @@ uv run ruff format .\main.py
 ```bash
 uv run ty check --error all
 ```
+Добавление новой ветки:
+```bash
+git switch --create название
+```
+Текстовая схема истории коммитов всех веток репозитория:
+```bash
+git log --graph --oneline --all --decorate
+```
+
+
+## Git LFS
+Инициализация LFS в репозитории (один раз):
+```bash
+git lfs install
+```
+
+Отслеживание .bin файлов:
+```bash
+git lfs track "*.bin"
+```
+
+Проверка, какие файлы под LFS:
+```bash
+git lfs ls-files
+```
+
+
+
+## Синхронизация с GitHub
+Подтянуть изменения из удалённой ветки `main` и переставить свои коммиты поверх:
+```bash
+git pull --rebase origin main
+```
