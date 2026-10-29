@@ -1,0 +1,38 @@
+stages:
+  prepare:
+    cmd: uv run python .\src\prepare.py
+    deps:
+    - .\data\raw.csv
+    - .\src\prepare.py
+    params:
+    - params.json:
+      - prepare.min_value
+    outs:
+    - .\data\clean.csv
+  split:
+    cmd: uv run python .\src\split.py
+    deps:
+    - .\data\clean.csv
+    - .\src\split.py
+    params:
+    - params.json:
+      - split.test_ratio
+    outs:
+    - .\data\test.csv
+    - .\data\train.csv
+  train:
+    cmd: uv run python .\src\train.py
+    deps:
+    - .\data\train.csv
+    - .\src\train.py
+    outs:
+    - .\model.json
+  evaluate:
+    cmd: uv run python .\src\evaluate.py
+    deps:
+    - .\data\test.csv
+    - .\model.json
+    - .\src\evaluate.py
+    metrics:
+    - metrics.json:
+        cache: false

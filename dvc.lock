@@ -1,0 +1,80 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: uv run python .\src\prepare.py
+    deps:
+    - path: .\data\raw.csv
+      hash: md5
+      md5: b3988e502bf9aea8999b11c1d746fe02
+      size: 4893
+    - path: .\src\prepare.py
+      hash: md5
+      md5: 96153684d70720c12d7a4cba1ceb8294
+      size: 227
+    params:
+      params.json:
+        prepare.min_value: 100
+    outs:
+    - path: .\data\clean.csv
+      hash: md5
+      md5: 20404eee2438e9138e14746a6b780dd5
+      size: 4506
+  split:
+    cmd: uv run python .\src\split.py
+    deps:
+    - path: .\data\clean.csv
+      hash: md5
+      md5: 20404eee2438e9138e14746a6b780dd5
+      size: 4506
+    - path: .\src\split.py
+      hash: md5
+      md5: ecc91fe62981c1aaf266add7f7b8dd74
+      size: 304
+    params:
+      params.json:
+        split.test_ratio: 0.2
+    outs:
+    - path: .\data\test.csv
+      hash: md5
+      md5: a73b59bbb3bb45eccfb2df2125ec749b
+      size: 906
+    - path: .\data\train.csv
+      hash: md5
+      md5: 719f355dc8b3cd8061d0e5ec3ae28d58
+      size: 3600
+  train:
+    cmd: uv run python .\src\train.py
+    deps:
+    - path: .\data\train.csv
+      hash: md5
+      md5: 719f355dc8b3cd8061d0e5ec3ae28d58
+      size: 3600
+    - path: .\src\train.py
+      hash: md5
+      md5: d19d6f59607b5fd911b484321c5d7095
+      size: 131
+    outs:
+    - path: .\model.json
+      hash: md5
+      md5: af74a63046f249a3cb048cac3f28af64
+      size: 15
+  evaluate:
+    cmd: uv run python .\src\evaluate.py
+    deps:
+    - path: .\data\test.csv
+      hash: md5
+      md5: a73b59bbb3bb45eccfb2df2125ec749b
+      size: 906
+    - path: .\model.json
+      hash: md5
+      md5: af74a63046f249a3cb048cac3f28af64
+      size: 15
+    - path: .\src\evaluate.py
+      hash: md5
+      md5: f45b43a872b1c8ef6a4f2b7d89457c4f
+      size: 223
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 6a27fb91baf75b5473a505ddc546e6b6
+      size: 14
