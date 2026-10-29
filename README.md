@@ -33,7 +33,6 @@ git switch --create название
 git log --graph --oneline --all --decorate
 ```
 
-
 ## Git LFS
 Инициализация LFS в репозитории (один раз):
 ```bash
@@ -45,15 +44,56 @@ git lfs install
 git lfs track "*.bin"
 ```
 
+Добавить правило в коммит:
+```bash
+git add .gitattributes
+git commit -m "chore: configure git lfs for .bin files"
+```
+
+Добавить и закоммитить сам файл, чтобы он попал под LFS:
+```bash
+git add model.bin
+git commit -m "feat: add model.bin via git lfs"
+```
+
 Проверка, какие файлы под LFS:
 ```bash
 git lfs ls-files
 ```
 
-
-
 ## Синхронизация с GitHub
 Подтянуть изменения из удалённой ветки `main` и переставить свои коммиты поверх:
 ```bash
 git pull --rebase origin main
+```
+
+## Podman (Windows)
+
+Podman используется для запуска контейнеров (например, S3-совместимого хранилища для DVC).
+На Windows Podman работает через виртуальную машину WSL2.
+
+Необходимо установить WSL2:
+```bash
+wsl --install
+```
+
+Создание и запуск виртуальной машины
+```bash
+podman machine init
+podman machine start
+```
+
+Проверка статуса:
+```bash
+podman machine ls
+```
+
+Создание тома:
+```bash
+podman volume create s3data
+```
+
+Проверка:
+```bash
+podman volume ls
 ```
