@@ -165,6 +165,17 @@ dvc push
 dvc pull
 ```
 
+### Управление контейнером S3
+Остановка контейнера (данные в томе `s3data` сохраняются):
+```bash
+podman stop s3
+```
+
+Запуск контейнера:
+```bash
+podman start s3
+```
+
 ### Стадии пайплайна
 ```bash
 dvc stage add -n prepare `
