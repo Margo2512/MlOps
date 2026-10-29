@@ -115,3 +115,85 @@ dvc doctor
 dvc init
 ```
 
+## Данные и DVC-пайплайн
+Генерация тестового файла с числами от 1 до 1000 (PowerShell):
+```bash
+$lines = 1..1000
+[IO.File]::WriteAllLines("$PWD\data\raw.csv", $lines, (New-Object System.Text.UTF8Encoding $False))
+```
+
+
+Добавление файла под управление DVC:
+```bash
+dvc add .\data\raw.csv
+```
+
+Коммит указателя DVC в Git (сам CSV в Git не попадает - он в .gitignore):
+```bash
+git add 'data\raw.csv.dvc' 'data\.gitignore'
+git commit -m "feat: add raw data via dvc"
+```
+
+### Параметры пайплайна
+Создание params.json:
+```bash
+$json = '{"prepare":{"min_value":100},"split":{"test_ratio":0.2}}'
+[IO.File]::WriteAllText("$PWD\params.json", $json, (New-Object System.Text.UTF8Encoding $False))
+```
+
+### S3-хранилище для DVC (RustFS в Podman)
+Запуск S3-совместимого хранилища:
+```bash
+podman run -d --name s3 -p 9000:9000 -p 9001:9001 -v s3data:/data -e RUSTFS_ACCESS_KEY=admin -e RUSTFS_SECRET_KEY=admin12345 -e RUSTFS_CONSOLE_ENABLE=true --restart=always docker.io/rustfs/rustfs:latest
+```
+
+Настройка remote в DVC:
+```bash
+dvc remote add -d storage s3://test-bucket/dvc
+dvc remote modify storage endpointurl http://localhost:9000
+```
+
+Учётные данные (в текущей сессии PowerShell):
+```bash
+$env:AWS_ACCESS_KEY_ID="admin"
+$env:AWS_SECRET_ACCESS_KEY="admin12345"
+```
+
+Загрузка и скачивание данных:
+```bash
+dvc push
+dvc pull
+```
+
+### Стадии пайплайна
+```bash
+dvc stage add -n prepare `
+  -d .\src\prepare.py -d .\data\raw.csv `
+  -p params.json:prepare.min_value `
+  -o .\data\clean.csv `
+  uv run python .\src\prepare.py
+
+dvc stage add -n split `
+  -d .\src\split.py -d .\data\clean.csv `
+  -p params.json:split.test_ratio `
+  -o .\data\train.csv -o .\data\test.csv `
+  uv run python .\src\split.py
+
+dvc stage add -n train `
+  -d .\src\train.py -d .\data\train.csv `
+  -o .\model.json `
+  uv run python .\src\train.py
+
+dvc stage add -n evaluate `
+  -d .\src\evaluate.py -d .\model.json -d .\data\test.csv `
+  -M metrics.json `
+  uv run python .\src\evaluate.py
+```
+
+
+### Запуск и просмотр пайплайна
+```bash
+dvc dag
+dvc dag --outs
+dvc repro
+```
