@@ -201,10 +201,33 @@ dvc stage add -n evaluate `
   uv run python .\src\evaluate.py
 ```
 
-
 ### Запуск и просмотр пайплайна
 ```bash
 dvc dag
 dvc dag --outs
 dvc repro
 ```
+
+### Модель
+- **LogAttention** (src/models.py) - многоголовое внимание с логарифмированием входов (log(softplus(q))). Поддерживает key_padding_mask, attn_mask, need_weights, is_causal.
+- **Model** (src/models.py) - стек из нескольких LogAttention с residual connection и LayerNorm.
+- **make_dataset, make_dataloader** (src/data.py) - генерация случайных тензоров для тестов.
+
+### Тесты
+Запуск всех тестов:
+```bash
+uv run pytest
+```
+
+Запуск по маркерам:
+```bash
+uv run pytest -m unit
+uv run pytest -m integration
+uv run pytest -m e2e
+```
+
+### Покрытие
+- **unit** - формы выхода LogAttention, make_dataset, инициализация, ошибка при embed_dim % num_heads != 0, need_weights, key_padding_mask.
+- **integration** - DataLoader -> Model, LogAttention внутри Model.
+- **e2e** - полный цикл: данные -> модель -> loss -> backward -> optimizer step.
+- **hypothesis** - LogAttention не совпадает с MultiheadAttention.
