@@ -209,7 +209,7 @@ dvc repro
 ```
 
 ### Модель
-- **LogAttention** (src/models.py) - многоголовое внимание с логарифмированием входов (log(softplus(q))). Поддерживает key_padding_mask, attn_mask, need_weights, is_causal.
+- **LogAttention** (src/models.py) - Multi-Head Attention с логарифмированием входов (log(softplus(q))). Поддерживает key_padding_mask, attn_mask, need_weights, is_causal.
 - **Model** (src/models.py) - стек из нескольких LogAttention с residual connection и LayerNorm.
 - **make_dataset, make_dataloader** (src/data.py) - генерация случайных тензоров для тестов.
 
