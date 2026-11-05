@@ -5,8 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "numpy>=2.5.4",
+    "pandas>=3.1.1",
     "requests>=2.34.2",
     "ruff>=0.17.1",
+    "torch>=2.15.0",
     "ty>=0.0.89",
 ]
 
@@ -36,3 +39,21 @@ indent-style = "space"
 unresolved-attribute = "error"
 possibly-unresolved-reference = "warn"
 division-by-zero = "warn"
+
+[dependency-groups]
+dev = [
+    "hypothesis[numpy]>=6.170.14",
+    "pytest>=9.2.0",
+    "ruff>=0.17.1",
+    "ty>=0.0.89",
+]
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "unit: быстрые тесты отдельных компонентов",
+    "integration: тесты взаимодействия компонентов",
+    "e2e: сквозные тесты всего пайплайна"
+]
